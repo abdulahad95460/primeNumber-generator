@@ -25,6 +25,22 @@ if(size <= 0){
 
   const isPrime = new Array(size).fill(true);
 
+  
+  for (let p = 3; p < firstOdd; p += 2) {
+    let isP = true;
+    for (let d = 3; d * d <= p; d += 2) if (p % d === 0) { isP = false;
+       break; }
+    if (!isP)
+       continue;
+    let firstMultiple = Math.ceil(firstOdd / p) * p;
+    if (firstMultiple % 2 === 0) firstMultiple += p;
+    if (firstMultiple === p) firstMultiple += p * 2;
+    for (let m = firstMultiple; m <= end; m += p * 2) {
+      const idx = (m - firstOdd) / 2;
+      if (idx >= 0 && idx < size) isPrime[idx] = false;
+    }
+  }
+
      for (let i = 0; i < size; i++) {
 
    const number = firstOdd + i * 2;
@@ -35,15 +51,17 @@ if(size <= 0){
 
 if(isPrime[i]) {
 
- const firstMultiple =
-     Math.max(number * number, Math.ceil(firstOdd / number) * number);
+ for (
+  let multiple = number * number;
+  multiple <= end;
+  multiple += number * 2
+) {
+  const index = (multiple - firstOdd) / 2;
 
-     for(let multiple = firstMultiple; multiple <= end; multiple += number) {
-    if (multiple % 2 !== 0) {
-          const index = (multiple - firstOdd) / 2;
-          isPrime[index] = false;
-      }
-   }
+  if (index >= 0 && index < size) {
+    isPrime[index] = false;
+  }
+}
 }
   }
 
