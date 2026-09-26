@@ -1,3 +1,4 @@
+const db = require("../database/database");
 const trialDivision = require("../algorithms/trialDivision")
 
 const sieveOfEratosthenes = require("../algorithms/sieveOfEratosthenes")
@@ -41,14 +42,41 @@ if(!selectedAlgorithm) {
     });
 }
 
+const startTime = process.hrtime.bigint();
+
 const primes = selectedAlgorithm(startNumber, endNumber);
 
+const endTime = process.hrtime.bigint();
+
+const elapsedTimeMs =
+  Number(endTime - startTime) / 1_000_000;
+
+db.prepare(`
+  INSERT INTO api_logs (
+    timestamp,
+    start,
+    end,
+    algorithm,
+    elapsedTimeMs,
+    primesReturned
+  )
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run(
+  new Date().toISOString(),
+  startNumber,
+  endNumber,
+  algorithm || "trial",
+  elapsedTimeMs,
+  primes.length
+);
+
 res.json({
-    start: startNumber,
-    end: endNumber,
-    algorithm: algorithm || "trial",
-    primes,
-  });
+  start: startNumber,
+  end: endNumber,
+  algorithm: algorithm || "trial",
+  primes,
+});
+
 }
 
 module.exports = generatePrimes;
