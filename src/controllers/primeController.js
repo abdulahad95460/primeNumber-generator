@@ -16,6 +16,7 @@ sieve: sieveOfEratosthenes,
 };
 
 function generatePrimes(req, res) {
+  try{
   const { start, end, algorithm } = req.query;
 
   const startNumber = Number(start);
@@ -77,6 +78,15 @@ res.json({
   primes,
 });
 
+  } catch (error) {
+    console.error("Prime generation error:", error);
+
+return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
 }
+
+
 
 module.exports = generatePrimes;
